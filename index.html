@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<head>
+   <meta charset="UTF-8">
+   <title>Моя страница</title>
+   <link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body>
+   <div id="main">
+      <div class="intro">
+         Меня зовут Яковлев Антон.
+         В данный момент я учусь в Новосибирском Государственном Техническом Университете на факультете прикладной математики и информатики по специальности математическое обеспечение и администрирование информационных систем.
+      </div>
+      <div class="childhood">
+         Родился в Новосибирске, в Дзержинском районе, в 1998 году.
+         Учился в гимназии №15. У меня всегда было много друзей, а также хорошие одноклассники.
+         Учился всегда хорошо, больше тянуло к математике и информатике. В 11 классе решил, что хочу всё-таки заниматься программированием, поэтому решил поступить в НГУ, но там оказалось слишком сложно учиться и, на следующий год, перепоступил в НГТУ на указанное направление.
+      </div>
+      <figure> 
+               <img src="me.jpg" id="group" width="70%">
+               <figcaption>Это я с кубком после победы на ВКСЛ (Всероссийская киберспортивная студенческая лига)</figcaption> 
+      </figure>
+
+      <div class="study">
+         В целом, у меня было много хобби помимо учебы, например, раньше я занимался спортом, а также рисовал. Но самым главным увлечением можно считать киберспорт, в котором у меня уже были победы на турнирах и, даже, можно сказать солидные выигрыши призовых
+      </div>
+   </div>
+   <div id="comments">
+      <p>Тут вы можете оставить комментарии...</p>
+      <form id="sendMessageForm">
+         <p id="nameLabel">Имя: <input type="text" id="userName"></p>
+         <p id="textLabel">Текст: </p>
+         <textarea placeholder="Сообщение" id="messageForm"></textarea>
+         <input type="submit" value="Отправить комментарий">
+         <div id="messages">
+         </div>
+      </form>
+   </div>
+
+   <!-- Подключение библиотек jQuery и socket.io -->
+   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+   <script src="/socket.io/socket.io.js"></script>
+
+   <script>
+      $(function() {
+         var socket = io.connect();
+
+         var $form = $("#sendMessageForm");
+         var $name = $("#userName");
+         var $message = $("#messageForm");
+         var $messages = $("#messages");
+
+         $form.submit(function(event) {
+            // чтобы не обновлялась страница (стандартное поведение)
+            event.preventDefault();
+
+            if ($name[0].value === "" || $name[0].value === undefined || $message[0].value === undefined || $message[0].value === "") 
+               alert('Ошибка: Одно из полей незаполнено!');
+            else
+               // Вызов события, отправляем текст сообщения
+               socket.emit('send_mess', { name: $name[0].value, comment: $message[0].value});
+         });
+
+         socket.on('set_mess', function (data) {
+            $messages.append("<div><b>" + data.name + ": </b>" + data.comment + "</div>");
+         });
+
+
+      });
+   </script>
+
+
+</body>
+</html>
